@@ -1,26 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import Footer from "./Footer";
 import Header from "./Header";
-import { getProducts } from "./services/productService";
+import Spinner from "./Spinner";
+import useFetch from "./services/useFetch";
 
 export default function App() {
   const [size, setSize] = useState("");
-  const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const productsAsync = await getProducts("shoes");
-        setProducts(productsAsync);
-      } catch (error) {
-        setError(error);
-      }
-    };
-    fetchData();
-  }, []);
+  // data is using an alias (:)
+  const {
+    data: products,
+    loading,
+    error,
+  } = useFetch("products?category=shoes");
 
   function renderProduct(p) {
     return (
@@ -47,6 +39,8 @@ export default function App() {
       </>
     );
   }
+
+  if (loading) return <Spinner />;
 
   return (
     <>
