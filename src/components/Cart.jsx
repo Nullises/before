@@ -52,7 +52,7 @@ export default function Cart({ cart, updateQuantity }) {
           : `${numTotalItems} Item${numTotalItems > 1 ? "s" : ""}`}
       </h1>
       <ul>{cart.map(renderItem)}</ul>
-      {cart.lenght > 0 && (
+      {cart.length > 0 && (
         <button
           className="btn btn-primary"
           onClick={() => navigate("/checkout")}
