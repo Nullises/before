@@ -1,18 +1,17 @@
 import React, { useState } from "react";
-import { saveShippingAddress } from "../services/shippingService";
+import { saveShippingAddress } from "./services/shippingService";
 
-// Declaring outside component to avoid recreation on each render
-const emptyAddress = {
-  city: "",
-  country: "",
-};
-
-// Discrete states of our form (only one at time)
 const STATUS = {
   IDLE: "IDLE",
   SUBMITTED: "SUBMITTED",
   SUBMITTING: "SUBMITTING",
   COMPLETED: "COMPLETED",
+};
+
+// Declaring outside component to avoid recreation on each render
+const emptyAddress = {
+  city: "",
+  country: "",
 };
 
 export default function Checkout({ cart, dispatch }) {
@@ -21,29 +20,28 @@ export default function Checkout({ cart, dispatch }) {
   const [saveError, setSaveError] = useState(null);
   const [touched, setTouched] = useState({});
 
-  // Derived State
+  // Derived state
   const errors = getErrors(address);
   const isValid = Object.keys(errors).length === 0;
 
   function handleChange(e) {
-    e.persist(); // Persist the event
+    e.persist(); // persist the event
     setAddress((curAddress) => {
       return {
-        ...curAddress, // Copy of current address
-        [e.target.id]: e.target.value, // ex: city: ''
+        ...curAddress,
+        [e.target.id]: e.target.value,
       };
     });
   }
 
   function handleBlur(event) {
-    // TODO
+    event.persist();
     setTouched((cur) => {
       return { ...cur, [event.target.id]: true };
     });
   }
 
   async function handleSubmit(event) {
-    // TODO
     event.preventDefault();
     setStatus(STATUS.SUBMITTING);
     if (isValid) {
@@ -61,15 +59,14 @@ export default function Checkout({ cart, dispatch }) {
 
   function getErrors(address) {
     const result = {};
-    if (!address.city) result.city = "City is Required";
+    if (!address.city) result.city = "City is required";
     if (!address.country) result.country = "Country is required";
     return result;
   }
 
   if (saveError) throw saveError;
-
   if (status === STATUS.COMPLETED) {
-    <h1>Thanks for shopping!</h1>;
+    return <h1>Thanks for shopping!</h1>;
   }
 
   return (
@@ -77,7 +74,7 @@ export default function Checkout({ cart, dispatch }) {
       <h1>Shipping Info</h1>
       {!isValid && status === STATUS.SUBMITTED && (
         <div role="alert">
-          <p>Please, complete all required fields</p>
+          <p>Please fix the following errors:</p>
           <ul>
             {Object.keys(errors).map((key) => {
               return <li key={key}>{errors[key]}</li>;
@@ -87,7 +84,7 @@ export default function Checkout({ cart, dispatch }) {
       )}
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="city">City*</label>
+          <label htmlFor="city">City</label>
           <br />
           <input
             id="city"
@@ -102,7 +99,7 @@ export default function Checkout({ cart, dispatch }) {
         </div>
 
         <div>
-          <label htmlFor="country">Country*</label>
+          <label htmlFor="country">Country</label>
           <br />
           <select
             id="country"
@@ -116,6 +113,7 @@ export default function Checkout({ cart, dispatch }) {
             <option value="United Kingdom">United Kingdom</option>
             <option value="USA">USA</option>
           </select>
+
           <p role="alert">
             {(touched.country || status === STATUS.SUBMITTED) && errors.country}
           </p>

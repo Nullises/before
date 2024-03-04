@@ -1,23 +1,17 @@
 import React, { useState } from "react";
-import "../App.css";
-import Spinner from "../Spinner";
-import useFetch from "../services/useFetch";
+import Spinner from "./Spinner";
+import useFetch from "./services/useFetch";
 import { useParams } from "react-router-dom";
 import PageNotFound from "./PageNotFound";
 import { Link } from "react-router-dom";
 
 export default function Products() {
   const [size, setSize] = useState("");
-  // category is destructured
   const { category } = useParams();
-  // data is using an alias (:)
-  const {
-    data: products,
-    loading,
-    error,
-  } = useFetch(`products?category=${category}`);
 
-  console.log("products", products);
+  const { data: products, loading, error } = useFetch(
+    "products?category=" + category
+  );
 
   function renderProduct(p) {
     return (
@@ -32,21 +26,11 @@ export default function Products() {
   }
 
   const filteredProducts = size
-    ? products.filter((product) =>
-        product.skus.find((sku) => sku.size === parseInt(size))
-      )
+    ? products.filter((p) => p.skus.find((s) => s.size === parseInt(size)))
     : products;
 
-  if (error) {
-    return (
-      <>
-        <h1>Something get wrong!</h1>
-      </>
-    );
-  }
-
+  if (error) throw error;
   if (loading) return <Spinner />;
-
   if (products.length === 0) return <PageNotFound />;
 
   return (
@@ -63,9 +47,9 @@ export default function Products() {
           <option value="8">8</option>
           <option value="9">9</option>
         </select>
-        {size && <h2>Found: {filteredProducts.length} items</h2>}
-        <section id="products">{filteredProducts.map(renderProduct)}</section>
+        {size && <h2>Found {filteredProducts.length} items</h2>}
       </section>
+      <section id="products">{filteredProducts.map(renderProduct)}</section>
     </>
   );
 }

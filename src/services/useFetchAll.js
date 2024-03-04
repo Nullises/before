@@ -8,10 +8,7 @@ export default function useFetchAll(urls) {
 
   useEffect(() => {
     // Only run if the array of URLs passed in changes
-    if (areEqual(prevUrls.current, urls)) {
-      setLoading(false);
-      return;
-    }
+    if (areEqual(prevUrls.current, urls)) return;
 
     prevUrls.current = urls;
 

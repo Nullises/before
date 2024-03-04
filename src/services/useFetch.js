@@ -1,32 +1,36 @@
 import { useState, useRef, useEffect } from "react";
+
 const baseUrl = process.env.REACT_APP_API_BASE_URL;
-export default function useFetch(param) {
+
+export default function useFetch(url) {
   const isMounted = useRef(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     isMounted.current = true;
-    const fetchData = async () => {
+    async function init() {
       try {
-        const response = await fetch(baseUrl + param);
-
+        const response = await fetch(baseUrl + url);
         if (response.ok) {
-          const data = await response.json();
-          if (isMounted.current) setData(data);
+          const json = await response.json();
+          if (isMounted.current) setData(json);
         } else {
           throw response;
         }
-      } catch (error) {
-        if (isMounted.current) setError(error);
+      } catch (e) {
+        if (isMounted.current) setError(e);
       } finally {
         if (isMounted.current) setLoading(false);
       }
-    };
-    fetchData();
+    }
+    init();
+
     return () => {
       isMounted.current = false;
     };
-  }, [param]);
+  }, [url]);
+
   return { data, error, loading };
 }
